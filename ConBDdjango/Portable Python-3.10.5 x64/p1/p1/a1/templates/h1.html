@@ -1,0 +1,13 @@
+<form action="{% url 'v2' %}" method="post">
+  {% csrf_token %}
+  Nome <input name="Nome" type='text'>
+  e-Mail <input name="e-Mail" type='text'>
+  <button type="submit">Enviar</button>
+</form>
+
+<form action="{% url 'v3' %}" method="post">
+  {% csrf_token %}
+  ID <input name="id" type='text'>
+  <button type="submit">Apagar</button>
+</form>
+
