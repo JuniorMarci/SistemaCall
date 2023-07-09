@@ -13,3 +13,10 @@ class CadastroForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['nome', 'email', 'password']
+
+
+from django import forms
+
+class ChangePasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)

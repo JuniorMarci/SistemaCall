@@ -1,0 +1,1 @@
+start "" "Portable Python-3.10.5 x64\Python-Launcher.exe" "Portable Python-3.10.5 x64\p1\p1\manage.py" runserver

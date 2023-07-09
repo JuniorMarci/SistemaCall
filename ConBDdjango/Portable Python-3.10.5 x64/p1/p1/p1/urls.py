@@ -34,6 +34,8 @@ urlpatterns = [
     path('NovoCadastrar/', views.NovoCadastro, name="NovoCadastro"),
     path('apagar/<str:email>/', views.apagar_usuario, name='apagar_usuario'),
     path('logout/', LogoutView.as_view(next_page=reverse_lazy('login')), name='logout'),
+    path('trocarSenha/', views.change_password, name='change_password'),
+    path('SenhaAlterada/', views.SenhaAlterada, name='SenhaAlterada'),
 ]
 
 

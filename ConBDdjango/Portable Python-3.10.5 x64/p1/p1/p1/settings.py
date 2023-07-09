@@ -40,6 +40,12 @@ INSTALLED_APPS = [
     'a1'
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Armazenar sessões no banco de dados
+# 'django.contrib.sessions.backends.cache' para armazenamento em cache
+# 'django.contrib.sessions.backends.file' para armazenamento em arquivo
+SESSION_COOKIE_SECURE = False  # Usar cookies seguros (requer HTTPS)
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -358,33 +358,33 @@
 
     <a href="#" class="FiltrosGerais-close botaotxt">X</a>
 
-<form method="post" action="{% url 'sv1' %}">
+<form id='filtrarTudo' method="post" action="{% url 'sv1' %}">
   {% csrf_token %}
  
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inMenores" name='menores_filtrado' placeholder="Digite o valor em segundos">
+            <input class="campoFiltro" type="text" id="inMenores" name='menores_filtrado' value="{{menores_filtrado}}" placeholder="Digite o valor em segundos">
 		</th>
 		<th style="width: 50%;">
-            <button class="botaoFiltro" onclick="ocultarMenores()">Ocultar Menores</button>
+            <button class="botaoFiltro" onclick="ocultarMenores()">Exibir Menores</button>
 		</th>
 </table>
 
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inMaiores" name='maiores_filtrado' placeholder="Digite o valor em segundos">
+            <input class="campoFiltro" type="text" id="inMaiores" name='maiores_filtrado' value="{{maiores_filtrado}}" placeholder="Digite o valor em segundos">
 		</th>
 		<th style="width: 50%;">
-            <button class="botaoFiltro" onclick="ocultarMaiores()">Ocultar Maiores</button>
+            <button class="botaoFiltro" onclick="ocultarMaiores()">Exibir Maiores</button>
 		</th>
 </table>
   
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inAgentes" name="agente_filtrado" placeholder="Digite um agente">
+            <input class="campoFiltro" type="text" id="inAgentes" name="agente_filtrado" value="{{ agente_filtrado }}" placeholder="Digite um agente">
 		</th>
 		<th style="width: 50%;">
             <button class="botaoFiltro" type='submit'>Filtrar Agentes</button>
@@ -394,7 +394,7 @@
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inAgentes" name="interlocutor_filtrado" placeholder="Digite um interlocutor">
+            <input class="campoFiltro" type="text" id="inAgentes" name="interlocutor_filtrado" value="{{ interlocutor_filtrado }}" placeholder="Digite um interlocutor">
 		</th>
 		<th style="width: 50%;">
             <button class="botaoFiltro" type='submit'>Filtrar Interlocutores</button>
@@ -404,7 +404,7 @@
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inHabilidades" name='habilidade_filtrada' placeholder="Digite uma habilidade">
+            <input class="campoFiltro" type="text" id="inHabilidades" name="habilidade_filtrada" value="{{ habilidade_filtrada }}" placeholder="Digite uma habilidade">
 		</th>
 		<th style="width: 50%;">
             <button class="botaoFiltro" onclick="restringirHabilidades()">Filtrar Habilidades</button>
@@ -414,7 +414,7 @@
 <table style="width: 100%;">
     <tr>
         <th style="width: 50%;">
-            <input class="campoFiltro" type="text" id="inID" name='idchamada_filtrado' placeholder="Digite um ID de Chamada">
+            <input class="campoFiltro" type="text" id="inID" name="idchamada_filtrado" value="{{ idchamada_filtrado }}" placeholder="Digite um ID de Chamada">
 		</th>
 		<th style="width: 50%;">
             <button class="botaoFiltro" onclick="restringirID()">Filtrar ID da Chamada</button>
@@ -422,6 +422,9 @@
 </table>
 
 </form>
+
+
+
 
 
 <!---
@@ -526,6 +529,9 @@
  --->
 
     <a href="#FiltrosGerais" class="botaotxt">&lt;</a>
+	<a href="{% url 'sv1' %}" class='botaotxt'>Desfazer todos os Filtros</a>
+	<a href="{% url 'cadastrar_usuario' %}" class='botaotxt'>Cadastros</a>
+	<a href="{% url 'change_password' %}" class='botaotxt'>Alterar Senha</a>
 
     <h1>Todas as Chamadas</h1>
 
@@ -550,6 +556,7 @@
                             <source src="/media/{{ chamada.arquivo }}" type="audio/mpeg">
                             Seu navegador não suporta o elemento de áudio.
                         </audio>
+						<a href="/media/{{ chamada.arquivo }}" download class="botao-download">&#x1F4E5;</a>      
                     </td>
                     <td>{{ chamada.inicio_chamada }}</td>
                     <td>{{ chamada.duracao }}</td>
@@ -571,24 +578,26 @@
             </tbody>
         </table>
 		
-		<!-- Elementos de paginação -->
+<!-- Elementos de paginação -->
 <div class="pagination">
     {% if pagina_atual.has_previous %}
-    <a href="?pagina={{ pagina_atual.previous_page_number }}">Anterior</a>
+        <a href="?pagina={{ pagina_atual.previous_page_number }}{% if idchamada_filtrado %}&idchamada_filtrado={{ idchamada_filtrado }}{% endif %}{% if habilidade_filtrada %}&habilidade_filtrada={{ habilidade_filtrada }}{% endif %}{% if interlocutor_filtrado %}&interlocutor_filtrado={{ interlocutor_filtrado }}{% endif %}{% if agente_filtrado %}&agente_filtrado={{ agente_filtrado }}{% endif %}{% if maiores_filtrado %}&maiores_filtrado={{ maiores_filtrado }}{% endif %}{% if menores_filtrado %}&menores_filtrado={{ menores_filtrado }}{% endif %}">Anterior</a>
     {% endif %}
 
     {% for num_pagina in pagina_atual.paginator.page_range %}
-    {% if num_pagina == pagina_atual.number %}
-    <span class="current-page">{{ num_pagina }}</span>
-    {% else %}
-    <a href="?pagina={{ num_pagina }}">{{ num_pagina }}</a>
-    {% endif %}
+        {% if num_pagina == pagina_atual.number %}
+            <span class="current-page">{{ num_pagina }}</span>
+        {% else %}
+            <a href="?pagina={{ num_pagina }}{% if idchamada_filtrado %}&idchamada_filtrado={{ idchamada_filtrado }}{% endif %}{% if habilidade_filtrada %}&habilidade_filtrada={{ habilidade_filtrada }}{% endif %}{% if interlocutor_filtrado %}&interlocutor_filtrado={{ interlocutor_filtrado }}{% endif %}{% if agente_filtrado %}&agente_filtrado={{ agente_filtrado }}{% endif %}{% if maiores_filtrado %}&maiores_filtrado={{ maiores_filtrado }}{% endif %}{% if menores_filtrado %}&menores_filtrado={{ menores_filtrado }}{% endif %}">{{ num_pagina }}</a>
+        {% endif %}
     {% endfor %}
 
     {% if pagina_atual.has_next %}
-    <a href="?pagina={{ pagina_atual.next_page_number }}">Próxima</a>
+        <a href="?pagina={{ pagina_atual.next_page_number }}{% if idchamada_filtrado %}&idchamada_filtrado={{ idchamada_filtrado }}{% endif %}{% if habilidade_filtrada %}&habilidade_filtrada={{ habilidade_filtrada }}{% endif %}{% if interlocutor_filtrado %}&interlocutor_filtrado={{ interlocutor_filtrado }}{% endif %}{% if agente_filtrado %}&agente_filtrado={{ agente_filtrado }}{% endif %}{% if maiores_filtrado %}&maiores_filtrado={{ maiores_filtrado }}{% endif %}{% if menores_filtrado %}&menores_filtrado={{ menores_filtrado }}{% endif %}">Próxima</a>
     {% endif %}
 </div>
+
+
 
 
     </div>

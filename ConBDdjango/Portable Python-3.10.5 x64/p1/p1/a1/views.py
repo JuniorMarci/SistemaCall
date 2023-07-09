@@ -4,9 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Tab
 
-# Create your views here.
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
 def v1(request):
-    return render(request,"h1.html")
+    if request.user.is_authenticated: STATUS = "Sair"
+    else: STATUS = "Fazer Login"
+    return render(request, "h1.html", {'STATUS': STATUS})
+
 
 def v2(request):
 
@@ -79,7 +84,7 @@ from .forms import CadastroForm
 from .models import CustomUser
 from .models import CustomUserManager
 
-@login_required
+@login_required(login_url='login')
 def cadastrar_usuario(request):
     if request.method == 'POST':
         form = CadastroForm(request.POST)
@@ -98,7 +103,7 @@ def cadastrar_usuario(request):
     return render(request, 'cadastro.html', context)
 
 
-@login_required
+@login_required(login_url='login')
 def apagar_usuario(request, email):
     usuario = CustomUser.objects.get(email=email)
     usuario.delete()
@@ -108,7 +113,7 @@ def apagar_usuario(request, email):
 from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError
 
-@login_required
+@login_required(login_url='login')
 def NovoCadastro(request):
     if request.method == "POST":
         entrada = CustomUser()
@@ -130,3 +135,35 @@ def NovoCadastro(request):
 
     todos = {'todos': CustomUser.objects.all(),'mensagem':""}
     return render(request,'cadastro.html',todos)
+
+
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import ChangePasswordForm
+
+@login_required(login_url='login')
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            confirm_password = form.cleaned_data['confirm_password']
+            if password == confirm_password:
+                user = request.user
+                user.set_password(password)
+                user.save()
+                messages.success(request, 'Senha alterada com sucesso!')
+                return redirect('SenhaAlterada')
+            else:
+                messages.error(request, 'As senhas não coincidem.')
+    else:
+        form = ChangePasswordForm()
+
+    context = {'form': form}
+    return render(request, 'change_password.html', context)
+
+
+def SenhaAlterada(request):
+    return render(request, 'senhaAlterada.html')
