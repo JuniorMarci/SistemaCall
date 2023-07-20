@@ -53,11 +53,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views import View
 from .forms import LoginForm
+from .GCpt import generate_captcha
 
 class LoginView(View):
     def get(self, request):
         form = LoginForm()
-        return render(request, 'login.html', {'form': form})
+        captcha_image, captcha_text = generate_captcha()  # Gere um novo Captcha
+        request.session['captcha'] = captcha_text  # Armazene a string gerada na sessão
+        return render(request, 'login.html', {'form': form, 'captcha_image': captcha_image})
+
+        #return render(request, 'login.html', {'form': form})
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -65,13 +70,21 @@ class LoginView(View):
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                erro = ""
-                return redirect('v1')  # substitua 'home' pelo nome da sua página inicial
-            else:
-                #form.add_error(None, 'Credenciais inválidas.')
-                erro = 'Credenciais inválidas'
+            
+            
+            captcha_text = form.cleaned_data.get('captcha')
+            if captcha_text == request.session.get('captcha', ''):
+            
+                if user is not None:
+                    login(request, user)
+                    erro = ""
+                    return redirect('v1')  # substitua 'home' pelo nome da sua página inicial
+                else:
+                    #form.add_error(None, 'Credenciais inválidas.')
+                    erro = 'Credenciais inválidas'
+            
+            else: erro = 'Captcha invalido'
+            
         return render(request, 'login.html', {'form': form, 'erro':erro})
 
 
